@@ -25,6 +25,8 @@ class PlayScene extends Phaser.Scene {
         this.load.image('sky', 'assets/sky.png');
         this.load.image('bird', 'assets/bird.png');
         this.load.image('pipe', 'assets/pipe.png');
+        this.load.image('pause', 'assets/pause.png');
+
     }
     create() {
         this.createBG();
@@ -32,6 +34,7 @@ class PlayScene extends Phaser.Scene {
         this.createPipes();
         this.createColiders();
         this.createScore();
+        this.createPause();
         this.handleInputs();
     }
 
@@ -76,6 +79,17 @@ class PlayScene extends Phaser.Scene {
         const bestScore = localStorage.getItem('bestScore');
         this.scoreText = this.add.text(16, 16, `Score: ${0}`, { fontSize: '32px', fill: '#000' });
         this.add.text(16, 52, `Best Score: ${bestScore || 0}`, { fontSize: '24px', fill: '#000' });
+    }
+    createPause() {
+        const pauseButton = this.add.image(this.config.width - 10, this.config.height - 10, 'pause')
+            .setInteractive()
+            .setScale(3)
+            .setOrigin(1);
+
+        pauseButton.on('pointerdown', () => {
+            this.physics.pause();
+            this.scene.pause();
+        })
     }
 
     handleInputs() {
@@ -126,19 +140,21 @@ class PlayScene extends Phaser.Scene {
         return rightMostX;
     }
 
-    saveBestScore(bestScore) {
-        const bestScoreText = localStorage.getItem('bestScore'); 
+    saveBestScore() {
+        const bestScoreText = localStorage.getItem('bestScore');
         const bestScore = bestScoreText && parseInt(bestScoreText, 10);
 
         if (!bestScore || this.score > bestScore) {
-            localStorage.setItem('bestScore', this.score); 
+            localStorage.setItem('bestScore', this.score);
         }
     }
 
     gameOver() {
         this.physics.pause();
         this.bird.setTint(0x8b008b);
+
         this.saveBestScore();
+
         this.time.addEvent({
             delay: 1000,
             callback: () => {
@@ -151,9 +167,10 @@ class PlayScene extends Phaser.Scene {
     flap() {
         this.bird.body.velocity.y = -this.flapVelocity;
     }
+
     increaseScore() {
         this.score++;
-        this.scoreText.setText(`Score: ${this.score}` );
+        this.scoreText.setText(`Score: ${this.score}`);
     }
 
 }
