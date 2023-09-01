@@ -28,13 +28,13 @@ class PlayScene extends Phaser.Scene {
         this.createBG();
         this.createBird();
         this.createPipes();
-        this.handleInputs()
+        this.createColiders();
+        this.handleInputs();
     }
 
     update() {
         this.checkGameStatus();
         this.recyclePipes()
-
     }
 
     createBG() {
@@ -57,6 +57,10 @@ class PlayScene extends Phaser.Scene {
         }
 
         this.pipes.setVelocityX(-200);
+    }
+
+    createColiders() {
+        this.physics.add.collider(this.bird, this.pipes);
     }
 
     handleInputs() {
@@ -118,5 +122,4 @@ class PlayScene extends Phaser.Scene {
 
 }
 export default PlayScene;
-
 
