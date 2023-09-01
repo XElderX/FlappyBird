@@ -60,7 +60,7 @@ class PlayScene extends Phaser.Scene {
     }
 
     createColiders() {
-        this.physics.add.collider(this.bird, this.pipes);
+        this.physics.add.collider(this.bird, this.pipes, this.gameOver(), null, this);
     }
 
     handleInputs() {
@@ -71,7 +71,7 @@ class PlayScene extends Phaser.Scene {
     checkGameStatus() {
         if (this.bird.y > this.config.height || this.bird.y < 0 - (this.bird.height + 15)) {
             // alert("you have lost");
-            this.restartBirdPosition();
+            this.gameOver();
         }
     }
 
@@ -110,7 +110,7 @@ class PlayScene extends Phaser.Scene {
         return rightMostX;
     }
 
-    restartBirdPosition() {
+    gameOver() {
         this.bird.x = this.config.startPosition.x;
         this.bird.y = this.config.startPosition.y;
         this.bird.body.velocity.y = 0;
