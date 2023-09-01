@@ -3,7 +3,6 @@ import Phaser from 'phaser';
 
 const PIPES_TO_RENDER = 4;
 
-
 class PlayScene extends Phaser.Scene {
     constructor(config) {
         super('PlayScene');
@@ -43,7 +42,7 @@ class PlayScene extends Phaser.Scene {
 
     createBird() {
         this.bird = this.physics.add.sprite(this.config.startPosition.x, this.config.startPosition.y, 'bird').setOrigin(0);
-        this.bird.body.gravity.y = 400;
+        this.bird.body.gravity.y = 320;
         this.bird.setCollideWorldBounds(true);
     }
 
@@ -108,7 +107,6 @@ class PlayScene extends Phaser.Scene {
     getRightMostPipe() {
         let rightMostX = 0;
         this.pipes.getChildren().forEach(function (pipe) {
-
             rightMostX = Math.max(pipe.x, rightMostX);
         })
 
@@ -116,11 +114,16 @@ class PlayScene extends Phaser.Scene {
     }
 
     gameOver() {
-        // this.bird.x = this.config.startPosition.x;
-        // this.bird.y = this.config.startPosition.y;
-        // this.bird.body.velocity.y = 0;
+
         this.physics.pause();
-        this.bird.setTint(0x8b008b)
+        this.bird.setTint(0x8b008b);
+        this.time.addEvent({
+            delay: 1000,
+            callback: () => {
+                this.scene.restart();
+            },
+            loop: false
+        })
     }
 
     flap() {
