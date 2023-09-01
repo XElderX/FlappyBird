@@ -50,8 +50,12 @@ class PlayScene extends Phaser.Scene {
         this.pipes = this.physics.add.group();
 
         for (let index = 0; index < PIPES_TO_RENDER; index++) {
-            const upperPipe = this.pipes.create(0, 0, 'pipe').setOrigin(0, 1);
-            const lowerPipe = this.pipes.create(0, 0, 'pipe').setOrigin(0);
+            const upperPipe = this.pipes.create(0, 0, 'pipe')
+                .setImmovable(true)
+                .setOrigin(0, 1);
+            const lowerPipe = this.pipes.create(0, 0, 'pipe')
+                .setImmovable(true)
+                .setOrigin(0);
 
             this.placePipe(upperPipe, lowerPipe);
         }
@@ -60,7 +64,7 @@ class PlayScene extends Phaser.Scene {
     }
 
     createColiders() {
-        this.physics.add.collider(this.bird, this.pipes, this.gameOver(), null, this);
+        this.physics.add.collider(this.bird, this.pipes, this.gameOver, null, this);
     }
 
     handleInputs() {
@@ -70,8 +74,8 @@ class PlayScene extends Phaser.Scene {
 
     checkGameStatus() {
         if (this.bird.y > this.config.height || this.bird.y < 0 - (this.bird.height + 15)) {
-            // alert("you have lost");
             this.gameOver();
+            // alert("you have lost");
         }
     }
 
@@ -111,9 +115,11 @@ class PlayScene extends Phaser.Scene {
     }
 
     gameOver() {
-        this.bird.x = this.config.startPosition.x;
-        this.bird.y = this.config.startPosition.y;
-        this.bird.body.velocity.y = 0;
+        // this.bird.x = this.config.startPosition.x;
+        // this.bird.y = this.config.startPosition.y;
+        // this.bird.body.velocity.y = 0;
+        this.physics.pause();
+        this.bird.setTint(0x8b008b)
     }
 
     flap() {
