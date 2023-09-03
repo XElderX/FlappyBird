@@ -19,7 +19,7 @@ class MenuScene extends BaseScene {
 
         this.createMenu(this.menu, this.setupMenuEvents.bind(this));
     }
-    
+
     setupMenuEvents(menuItem) {
         const textGO = menuItem.textGO;
         textGO.setInteractive();
@@ -29,6 +29,12 @@ class MenuScene extends BaseScene {
         })
         textGO.on('pointerout', () => {
             textGO.setStyle({ fill: '#fff' });
+        })
+        textGO.on('pointerup', () => {
+            menuItem.scene && this.scene.start(menuItem.scene);
+            if (menuItem.text === 'Exit') {
+                this.game.destroy(true)
+            }
         })
     }
 }
