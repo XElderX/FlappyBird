@@ -72,6 +72,7 @@ class PlayScene extends BaseScene {
         this.scoreText = this.add.text(16, 16, `Score: ${0}`, { fontSize: '32px', fill: '#000' });
         this.add.text(16, 52, `Best Score: ${bestScore || 0}`, { fontSize: '24px', fill: '#000' });
     }
+
     createPause() {
         const pauseButton = this.add.image(this.config.width - 10, this.config.height - 10, 'pause')
             .setInteractive()
@@ -144,7 +145,6 @@ class PlayScene extends BaseScene {
     gameOver() {
         this.physics.pause();
         this.bird.setTint(0x8b008b);
-
         this.saveBestScore();
 
         this.time.addEvent({
