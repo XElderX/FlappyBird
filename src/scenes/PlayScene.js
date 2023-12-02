@@ -1,12 +1,10 @@
-
-import Phaser from 'phaser';
+import BaseScene from './BaseScene';
 
 const PIPES_TO_RENDER = 4;
 
-class PlayScene extends Phaser.Scene {
+class PlayScene extends BaseScene {
     constructor(config) {
-        super('PlayScene');
-        this.config = config
+        super('PlayScene', config);
 
         this.bird = null;
         this.pipes = null;
@@ -21,26 +19,45 @@ class PlayScene extends Phaser.Scene {
         this.score = 0;
         this.scoreText = '';
     }
-    preload() {
-        this.load.image('sky', 'assets/sky.png');
-        this.load.image('bird', 'assets/bird.png');
-        this.load.image('pipe', 'assets/pipe.png');
-        this.load.image('pause', 'assets/pause.png');
 
-    }
     create() {
-        this.createBG();
+        super.create();
         this.createBird();
         this.createPipes();
         this.createColiders();
         this.createScore();
         this.createPause();
         this.handleInputs();
+        this.listenToEvents();
     }
 
     update() {
         this.checkGameStatus();
         this.recyclePipes()
+    }
+
+    listenToEvents() {
+        if (this.pauseEvent) { return; }
+
+        this.pauseEvent = this.events.on('resume', () => {
+            this.initialTime = 3;
+            this.countDownText = this.add.text(...this.screenCenter, 'Fly in: ' + this.initialTime, this.fontOptions).setOrigin(0.5);
+            this.timedEvent = this.time.addEvent({
+                delay: 1000,
+                callback: this.countDown,
+                callbackScope: this,
+                loop: true
+            })
+        })
+    }
+    countDown() {
+        this.initialTime--;
+        this.countDownText.setText('Fly in: ' + this.initialTime);
+        if (this.initialTime <= 0) {
+            this.countDownText.setText('');
+            this.physics.resume();
+            this.timedEvent.remove();
+        }
     }
 
     createBG() {
@@ -80,6 +97,7 @@ class PlayScene extends Phaser.Scene {
         this.scoreText = this.add.text(16, 16, `Score: ${0}`, { fontSize: '32px', fill: '#000' });
         this.add.text(16, 52, `Best Score: ${bestScore || 0}`, { fontSize: '24px', fill: '#000' });
     }
+
     createPause() {
         const pauseButton = this.add.image(this.config.width - 10, this.config.height - 10, 'pause')
             .setInteractive()
@@ -89,6 +107,7 @@ class PlayScene extends Phaser.Scene {
         pauseButton.on('pointerdown', () => {
             this.physics.pause();
             this.scene.pause();
+            this.scene.launch('PauseScene');
         })
     }
 
@@ -152,7 +171,6 @@ class PlayScene extends Phaser.Scene {
     gameOver() {
         this.physics.pause();
         this.bird.setTint(0x8b008b);
-
         this.saveBestScore();
 
         this.time.addEvent({
@@ -175,4 +193,3 @@ class PlayScene extends Phaser.Scene {
 
 }
 export default PlayScene;
-
