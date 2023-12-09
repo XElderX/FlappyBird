@@ -11,17 +11,32 @@ class PlayScene extends BaseScene {
         this.isPaused = false;
 
         this.pipeHorizontalDistance = 0;
-        this.pipeVerticalDistanceRange = [150, 250];
-        this.pipeHorizontalDistanceRange = [350, 500];
 
         this.VELOCITY = 200;
         this.flapVelocity = 250;
 
         this.score = 0;
         this.scoreText = '';
+
+        this.currenctDifficulty = 'easy';
+        this.difficulties = {
+            'easy': {
+                pipeHorizontalDistanceRange: [300, 350],
+                pipeVerticalDistanceRange: [150,200]
+            },
+            'normal': {
+                pipeHorizontalDistanceRange: [280, 330],
+                pipeVerticalDistanceRange: [140, 190]
+            },
+            'hard': {
+                pipeHorizontalDistanceRange: [250, 310],
+                pipeVerticalDistanceRange: [120, 170]
+            },
+        }
     }
 
     create() {
+        this.currentDifficulty = 'easy';
         super.create();
         this.createBird();
         this.createPipes();
@@ -128,10 +143,11 @@ class PlayScene extends BaseScene {
     }
 
     placePipe(uPipe, lPipe) {
+        const difficulty = this.difficulties[this.currentDifficulty];
         const rightMostX = this.getRightMostPipe();
-        const pipeVerticalDistance = Phaser.Math.Between(this.pipeVerticalDistanceRange[0], this.pipeVerticalDistanceRange[1]);
+        const pipeVerticalDistance = Phaser.Math.Between(...difficulty.pipeVerticalDistanceRange);
         const pipeVerticalPosition = Phaser.Math.Between(0 + 20, this.config.height - 20 - pipeVerticalDistance);
-        const pipeHorizontalDistance = Phaser.Math.Between(...this.pipeHorizontalDistanceRange);
+        const pipeHorizontalDistance = Phaser.Math.Between(...difficulty.pipeHorizontalDistanceRange);
 
         uPipe.x = rightMostX + pipeHorizontalDistance;
         uPipe.y = pipeVerticalPosition;
@@ -149,11 +165,21 @@ class PlayScene extends BaseScene {
                     this.placePipe(...tempPipes)
                     this.increaseScore();
                     this.saveBestScore();
+                    this.increaseDifficulty()
                 }
             }
         })
     }
 
+    increaseDifficulty(){
+        if (this.score === 5) {
+            this.currentDifficulty = "normal";     
+        }
+        if (this.score === 15) {
+            this.currentDifficulty = "hard";     
+        }
+    }
+    
     getRightMostPipe() {
         let rightMostX = 0;
         this.pipes.getChildren().forEach(function (pipe) {
