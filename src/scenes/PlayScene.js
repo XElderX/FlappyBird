@@ -36,7 +36,7 @@ class PlayScene extends BaseScene {
     }
 
     create() {
-        this.currentDifficulty = 'hard';
+        this.currentDifficulty = 'easy';
         super.create();
         this.createBird();
         this.createPipes();
@@ -165,11 +165,21 @@ class PlayScene extends BaseScene {
                     this.placePipe(...tempPipes)
                     this.increaseScore();
                     this.saveBestScore();
+                    this.increaseDifficulty()
                 }
             }
         })
     }
 
+    increaseDifficulty(){
+        if (this.score === 5) {
+            this.currentDifficulty = "normal";     
+        }
+        if (this.score === 15) {
+            this.currentDifficulty = "hard";     
+        }
+    }
+    
     getRightMostPipe() {
         let rightMostX = 0;
         this.pipes.getChildren().forEach(function (pipe) {
